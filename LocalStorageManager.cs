@@ -8,7 +8,6 @@ namespace HTF
         {
             var js = (IJavaScriptExecutor)driver;
             js.ExecuteScript("localStorage.removeItem('uselessTokenIGuess');");
-            Console.WriteLine("LocalStorage token cleared");
         }
 
         public static void SetPlayerData(IWebDriver driver)
@@ -23,7 +22,6 @@ namespace HTF
                 return true;
             ";
             js.ExecuteScript(script);
-            Console.WriteLine("Player data set in LocalStorage");
         }
     }
 }

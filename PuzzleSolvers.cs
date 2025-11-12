@@ -9,46 +9,41 @@ namespace HTF
     {
         public static void SolveDockingBay(IWebDriver driver)
         {
-            Thread.Sleep(2000);
+            var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
 
             var binaryValues = new List<int>();
             for (int i = 0; i < 5; i++)
             {
-                var valueElement = driver.FindElement(By.Id($"randomValue-{i}"));
+                var valueElement = wait.Until(d => d.FindElement(By.Id($"randomValue-{i}")));
                 binaryValues.Add(int.Parse(valueElement.Text.Trim()));
-                Console.WriteLine($"Position {i}: {binaryValues[i]}");
             }
-
-            Console.WriteLine($"Binary pattern: {string.Join(" ", binaryValues)}");
-
             for (int i = 0; i < 5; i++)
             {
-                var switchElement = driver.FindElement(By.Id($"switch-{i}"));
+                var switchElement = wait.Until(d => d.FindElement(By.Id($"switch-{i}")));
                 var currentClass = switchElement.GetAttribute("class");
 
                 if (binaryValues[i] == 1 && !currentClass.Contains("up"))
                 {
                     switchElement.Click();
-                    Console.WriteLine($"Set switch {i} to UP (1)");
+                    wait.Until(d => d.FindElement(By.Id($"switch-{i}")).GetAttribute("class").Contains("up"));
                 }
                 else if (binaryValues[i] == 0 && !currentClass.Contains("down"))
                 {
                     switchElement.Click();
                     switchElement.Click();
-                    Console.WriteLine($"Set switch {i} to DOWN (0)");
-                }
-                else
-                {
-                    Console.WriteLine($"Switch {i} already in correct position");
+                    wait.Until(d => d.FindElement(By.Id($"switch-{i}")).GetAttribute("class").Contains("down"));
                 }
                 Thread.Sleep(500);
             }
 
-            driver.FindElement(By.Id("button")).Click();
-            Console.WriteLine("DROP button clicked");
-            Thread.Sleep(500);
-            driver.FindElement(By.Id("submarine")).Click();
-            Console.WriteLine("Submarine clicked");
+            var dropButton = wait.Until(d =>
+            {
+                var button = d.FindElement(By.Id("button"));
+                return button.Enabled ? button : null;
+            });
+            dropButton.Click();
+            var submarine = wait.Until(d => d.FindElement(By.Id("submarine")));
+            submarine.Click();
         }
 
         public static void SolveSubmarine(IWebDriver driver)
@@ -59,15 +54,12 @@ namespace HTF
             while (arrowImage.Displayed)
             {
                 var arrowSrc = arrowImage.GetAttribute("src");
-                Console.WriteLine($"Current arrow: {arrowSrc}");
 
                 var body = driver.FindElement(By.TagName("body"));
                 if (arrowSrc.Contains("up.png")) body.SendKeys(Keys.ArrowUp);
                 else if (arrowSrc.Contains("down.png")) body.SendKeys(Keys.ArrowDown);
                 else if (arrowSrc.Contains("left.png")) body.SendKeys(Keys.ArrowLeft);
                 else if (arrowSrc.Contains("right.png")) body.SendKeys(Keys.ArrowRight);
-
-                Console.WriteLine($"Pressed {arrowSrc.Split('/').Last().Replace(".png", "").ToUpper()} arrow");
                 Thread.Sleep(1000);
 
                 try
@@ -92,7 +84,6 @@ namespace HTF
                 var squares = driver.FindElements(By.CssSelector(".container .square")).ToList();
                 if (squares.Count == 0)
                 {
-                    Console.WriteLine("No squares found in container.");
                     return;
                 }
 
@@ -150,11 +141,8 @@ namespace HTF
 
                 if (activeSquare == null)
                 {
-                    Console.WriteLine("Active square not found after hovering attempts.");
                     return;
                 }
-
-                Console.WriteLine($"Active square found. Clicking 3 times...");
 
                 for (int i = 0; i < 3; i++)
                 {
@@ -189,7 +177,6 @@ namespace HTF
                     }
                 }
 
-                Console.WriteLine("Finished clicking active square.");
             }
             catch (Exception ex)
             {
@@ -199,6 +186,7 @@ namespace HTF
 
         public static void SpellAtlantisJS(IWebDriver driver)
         {
+            Thread.Sleep(1000);
             try
             {
                 var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
@@ -232,11 +220,9 @@ namespace HTF
                     ";
 
                     ((IJavaScriptExecutor)driver).ExecuteScript(dragDropScript, sourceCube, targetSlot);
-                    Console.WriteLine($"Placed '{letter}' via JS drag-and-drop.");
                     Thread.Sleep(300);
                 }
 
-                Console.WriteLine("Finished spelling ATLANTIS with JS drag-and-drop.");
             }
             catch (Exception ex)
             {
@@ -253,20 +239,16 @@ namespace HTF
 
                 var crystal = wait.Until(d => d.FindElement(By.Id("crystal")));
                 crystal.Click();
-                Console.WriteLine("Crystal clicked normally.");
                 Thread.Sleep(500);
 
                 var outsideButton = wait.Until(d => d.FindElement(By.CssSelector("button.crystal-outside")));
                 outsideButton.Click();
-                Console.WriteLine("Crystal outside button clicked.");
                 Thread.Sleep(1000);
 
                 var insideButton = wait.Until(d => d.FindElement(By.CssSelector("button.crystal-inside")));
                 actions.ClickAndHold(insideButton).Perform();
-                Console.WriteLine("Started long press on crystal inside...");
                 Thread.Sleep(8000);
                 actions.Release(insideButton).Perform();
-                Console.WriteLine("Released long press on crystal inside.");
             }
             catch (Exception ex)
             {
@@ -280,15 +262,12 @@ namespace HTF
 
             var body = driver.FindElement(By.TagName("body"));
             body.SendKeys(Keys.Space);
-            Console.WriteLine("BOSS BATTLE START");
             Thread.Sleep(1000);
 
-            Console.WriteLine("Starting left-right pattern...");
             while (true)
             {
                 try
                 {
-                    Console.WriteLine("Moving LEFT 18 times...");
                     for (int i = 0; i < 18; i++)
                     {
                         for (int j = 0; j < 1; j++)
@@ -300,7 +279,6 @@ namespace HTF
                         Thread.Sleep(10);
                     }
 
-                    Console.WriteLine("Moving RIGHT 18 times...");
                     for (int i = 0; i < 18; i++)
                     {
                         for (int j = 0; j < 1; j++)
@@ -316,7 +294,6 @@ namespace HTF
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Boss battle error: {ex.Message}");
                     break;
                 }
             }

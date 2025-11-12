@@ -13,8 +13,6 @@ namespace HTF
             try
             {
                 driver.Navigate().GoToUrl(GameSolver.BaseUrl);
-                Console.WriteLine($"Title: {driver.Title}");
-
                 GameSolver.SolveCompleteGame(driver);
                 Console.ReadLine();
             }
@@ -63,7 +61,6 @@ namespace HTF
 
         private static void SolveDockingBaySection(IWebDriver driver)
         {
-            GameNavigator.NavigateToUrl(driver, $"{BaseUrl}docking-bay");
             PuzzleSolvers.SolveDockingBay(driver);
         }
 
@@ -78,8 +75,6 @@ namespace HTF
             var exitSquare = driver.FindElement(By.CssSelector("div.square"));
             var actions = new Actions(driver);
             actions.DoubleClick(exitSquare).Perform();
-            Console.WriteLine("EXIT DARKNESS");
-
             Thread.Sleep(1000);
             PuzzleSolvers.SolveEscape(driver);
             PuzzleSolvers.SpellAtlantisJS(driver);
@@ -88,7 +83,6 @@ namespace HTF
 
         private static void SolveBossBattle(IWebDriver driver)
         {
-            //GameNavigator.NavigateToUrl(driver, $"{BaseUrl}boss");
             PuzzleSolvers.BeatBoss(driver);
         }
     }

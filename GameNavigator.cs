@@ -8,7 +8,6 @@ namespace HTF
         public static void NavigateToUrl(IWebDriver driver, string url)
         {
             driver.Navigate().GoToUrl(url);
-            Console.WriteLine($"Navigated to: {url}");
         }
 
         public static void WaitAndClick(IWebDriver driver, By locator, int timeoutSeconds = 10)
@@ -16,7 +15,6 @@ namespace HTF
             var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeoutSeconds));
             var element = wait.Until(d => d.FindElement(locator));
             element.Click();
-            Console.WriteLine($"Clicked element: {locator}");
         }
 
         public static IWebElement WaitForElement(IWebDriver driver, By locator, int timeoutSeconds = 10)
@@ -33,7 +31,6 @@ namespace HTF
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to click {locator}: {ex.Message}");
                 throw;
             }
         }

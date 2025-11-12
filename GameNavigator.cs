@@ -1,10 +1,5 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HTF
 {
@@ -21,12 +16,26 @@ namespace HTF
             var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeoutSeconds));
             var element = wait.Until(d => d.FindElement(locator));
             element.Click();
+            Console.WriteLine($"Clicked element: {locator}");
         }
 
         public static IWebElement WaitForElement(IWebDriver driver, By locator, int timeoutSeconds = 10)
         {
             var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeoutSeconds));
             return wait.Until(d => d.FindElement(locator));
+        }
+
+        public static void SafeClick(IWebDriver driver, By locator, int timeoutSeconds = 10)
+        {
+            try
+            {
+                WaitAndClick(driver, locator, timeoutSeconds);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to click {locator}: {ex.Message}");
+                throw;
+            }
         }
     }
 }
